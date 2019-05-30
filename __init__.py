@@ -40,5 +40,5 @@ class ASSkill(Skill):
         accounts = await self._get_accounts(environment)
         return_text = f"*{environment} - Accounts*\n"
         for account in accounts:
-            return_text = f"{return_text}```ID: {account['id']}Name: {account['name']} Status: {account['status']}```\n"
+            return_text = f"{return_text}```ID: {account['id']} Name: {account['name']} Status: {account['status']}```\n"
         await message.respond(f"{return_text}")
