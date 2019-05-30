@@ -3,7 +3,7 @@ from opsdroid.matchers import match_regex
 
 import aiohttp
 import ssl
-
+import json
 import re
 
 
@@ -97,6 +97,19 @@ class ASSkill(Skill):
         else:
             return None
 
+    async def _add_account(self, environment, name):
+        sslcontext = ssl.create_default_context(
+            cafile=self.config["sites"][environment]["ca"]
+        )
+        sslcontext.load_cert_chain(self.config["sites"][environment]["cert"])
+        timeout = aiohttp.ClientTimeout(total=60)
+        api_url = f"{self.config['sites'][environment]['url']}/customers"
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            payload = json.dumps({"#item": {"name": name, "products": []}})
+            async with session.post(api_url, ssl=sslcontext, data=payload) as resp:
+                data = await resp.json()
+                return data["#item"]
+
     # Beging Matching functions
 
     @match_regex(r"^account services list environments$")
@@ -168,14 +181,15 @@ class ASSkill(Skill):
     @match_regex(
         r"^account services (?P<environment>\w+-\w+|\w+) add account name: (?P<name>.*)$"
     )
-    async def put_account(self, message):
+    async def add_account(self, message):
         environment = message.regex.group("environment")
         name = message.regex.group("name")
         check_account = await self._get_account_by_name(environment, name)
         if not check_account:
             # Account Not Found
+            account = await self._add_account(environment, name)
             return_text = f"*{environment} - Added Account*\n"
-            return_text = f"{return_text}```NOT IMPLEMENTED```\n"
+            return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}\nStatus: {account['status']}```\n"
             await message.respond(f"{return_text}")
         else:
             return_text = f"*{environment} - Account Exists*\n"
