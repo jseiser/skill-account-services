@@ -34,7 +34,7 @@ class ASSkill(Skill):
 
         await message.respond(f"{as_environments}")
 
-    @match_regex(r"^account services list account (?P<environment>\w+-\w+|\w+)$")
+    @match_regex(r"^account services list accounts (?P<environment>\w+-\w+|\w+)$")
     async def list_accounts(self, message):
         environment = message.regex.group("environment")
         accounts = await self._get_accounts(environment)
