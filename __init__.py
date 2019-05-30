@@ -3,6 +3,7 @@ from opsdroid.matchers import match_regex
 
 import aiohttp
 import ssl
+import re
 
 
 class ASSkill(Skill):
@@ -26,6 +27,34 @@ class ASSkill(Skill):
                 data = await resp.json()
                 return data["#collection"]
 
+    async def _get_account_id_by_name(self, environment, name):
+        account_list = await self._get_accounts(environment)
+        for account in account_list:
+            search = re.search(re.escape(name), account["name"], re.IGNORECASE)
+            if search:
+                return account["id"]
+            else:
+                return None
+
+    async def _get_account_by_name(self, environment, name):
+        customer_id = await self._get_account_id_by_name(environment, name)
+        if customer_id:
+            sslcontext = ssl.create_default_context(
+                cafile=self.config["sites"][environment]["ca"]
+            )
+            sslcontext.load_cert_chain(self.config["sites"][environment]["cert"])
+            timeout = aiohttp.ClientTimeout(total=60)
+            api_url = (
+                f"{self.config['sites'][environment]['url']}/customers/{customer_id}"
+            )
+
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.get(api_url, ssl=sslcontext) as resp:
+                    data = await resp.json()
+                    return data["#item"]
+        else:
+            return None
+
     # Beging Matching functions
 
     @match_regex(r"^account services list environments$")
@@ -34,11 +63,20 @@ class ASSkill(Skill):
 
         await message.respond(f"{as_environments}")
 
-    @match_regex(r"^account services list accounts (?P<environment>\w+-\w+|\w+)$")
+    @match_regex(r"^account services (?P<environment>\w+-\w+|\w+) list accounts$")
     async def list_accounts(self, message):
         environment = message.regex.group("environment")
         accounts = await self._get_accounts(environment)
         return_text = f"*{environment} - Accounts*\n"
         for account in accounts:
-            return_text = f"{return_text}```ID: {account['id']} Name: {account['name']} Status: {account['status']}```\n"
+            return_text = f"{return_text}```Customer ID: {account['id']} Name: {account['name']} Status: {account['status']}```\n"
         await message.respond(f"{return_text}")
+
+    @match_regex(
+        r"^account services (?P<environment>\w+-\w+|\w+) get account name: (?P<name>.*)$"
+    )
+    async def get_account_by_name(self, message):
+        environment = message.regex.group("environment")
+        name = message.regex.group("name")
+        account = await self._get_account_by_name(environment, name)
+        await message.respond(f"{account}")
