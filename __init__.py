@@ -107,7 +107,7 @@ class ASSkill(Skill):
         async with aiohttp.ClientSession(timeout=timeout) as session:
             payload = {"#item": {"name": name, "products": []}}
             print(payload)
-            async with session.post(api_url, ssl=sslcontext, json=payload) as resp:
+            async with session.post(api_url, ssl=sslcontext, data=payload) as resp:
                 data = await resp.json()
                 print(resp.status)
                 print(data)
