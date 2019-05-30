@@ -175,9 +175,10 @@ class ASSkill(Skill):
         check_account = await self._get_account_by_name(environment, name)
         if not check_account:
             # Account Not Found
-            return_text = f"*{environment} -Added Account*\n"
+            return_text = f"*{environment} - Added Account*\n"
             return_text = f"{return_text}```NOT IMPLEMENTED```\n"
             await message.respond(f"{return_text}")
-        return_text = f"*{environment} - Account Exists*\n"
-        return_text = f"{return_text}```Customer Name: {check_account['name']}\nCustomer ID: {check_account['id']}\nStatus: {check_account['status']}```\n"
-        await message.respond(f"{return_text}")
+        else:
+            return_text = f"*{environment} - Account Exists*\n"
+            return_text = f"{return_text}```Customer Name: {check_account['name']}\nCustomer ID: {check_account['id']}\nStatus: {check_account['status']}```\n"
+            await message.respond(f"{return_text}")
