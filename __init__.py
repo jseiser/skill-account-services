@@ -112,7 +112,7 @@ class ASSkill(Skill):
         accounts = await self._get_accounts(environment)
         return_text = f"*{environment} - Accounts*\n"
         for account in accounts:
-            return_text = f"{return_text}```Customer ID: {account['id']} Name: {account['name']} Status: {account['status']}```\n"
+            return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}\nStatus: {account['status']}```\n"
         await message.respond(f"{return_text}")
 
     @match_regex(
@@ -124,11 +124,8 @@ class ASSkill(Skill):
         account = await self._get_account_by_name(environment, name)
         return_text = f"*{environment} - Account*\n"
         if account:
-            print(account)
-            print(account["environments"])
-            return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}```\n"
+            return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}\nStatus: {account['status']}```\n"
             for environment in account["environments"]:
-
                 return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID: {environment['subaccount_id']}```\n"
             await message.respond(f"{return_text}")
         else:
@@ -144,7 +141,7 @@ class ASSkill(Skill):
         account = await self._get_account_by_customer_id(environment, customer_id)
         return_text = f"*{environment} - Account*\n"
         if account:
-            return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}```\n"
+            return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}\nStatus: {account['status']}```\n"
             for environment in account["environments"]:
                 return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID: {environment['subaccount_id']}```\n"
             await message.respond(f"{return_text}")
@@ -161,7 +158,7 @@ class ASSkill(Skill):
         account = await self._get_account_by_account_id(environment, account_id)
         return_text = f"*{environment} - Account*\n"
         if account:
-            return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}```\n"
+            return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}\nStatus: {account['status']}```\n"
             for environment in account["environments"]:
                 return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID: {environment['subaccount_id']}```\n"
             await message.respond(f"{return_text}")
