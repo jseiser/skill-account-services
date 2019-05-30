@@ -83,7 +83,7 @@ class ASSkill(Skill):
         return_text = f"*{environment} - Account*\n"
         if account:
             print(account)
-            print(account["environment"])
+            print(account["environments"])
             return_text = f"*{return_text}```Customer Name: {account['name']}\n Customer ID: {account['id']}```\n"
             # return_text = f"*{return_text}```Environment\n\tID: {account['environments']['id']}\n\tType: {account['environments']['env_type']}\n\tAccount ID: {account['environments']['account_id']}\n\tSub Account ID{account['environments']['subaccount_id']}```"
             await message.respond(f"{return_text}")
