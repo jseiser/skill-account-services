@@ -30,10 +30,9 @@ class ASSkill(Skill):
     async def _get_account_id_by_name(self, environment, name):
         account_list = await self._get_accounts(environment)
         for account in account_list:
-            print(account["name"])
-            search = re.search(re.escape(name), account["name"], re.IGNORECASE)
-            if search:
-                print("match")
+            if name.lower() == account["name"].lower():
+                # search = re.search(re.escape(name), account["name"], re.IGNORECASE)
+                # if search:
                 return account["id"]
         return None
 
@@ -79,6 +78,5 @@ class ASSkill(Skill):
     async def get_account_by_name(self, message):
         environment = message.regex.group("environment")
         name = message.regex.group("name")
-        print(f"INBOUND {environment}{name}")
         account = await self._get_account_by_name(environment, name)
         await message.respond(f"{account}")
