@@ -129,6 +129,8 @@ class ASSkill(Skill):
                 api_url, ssl=sslcontext, json=payload, headers=headers
             ) as resp:
                 data = await resp.json()
+                print(resp.status)
+                print(data)
                 return data["#item"]
 
     # Beging Matching functions
