@@ -108,6 +108,7 @@ class ASSkill(Skill):
             payload = json.dumps({"#item": {"name": name, "products": []}})
             async with session.post(api_url, ssl=sslcontext, data=payload) as resp:
                 data = await resp.json()
+                print(data)
                 return data["#item"]
 
     # Beging Matching functions
