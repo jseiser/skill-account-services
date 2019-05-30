@@ -13,7 +13,7 @@ class ASSkill(Skill):
             return_text = f"{return_text}```Environment: {site} URL: {self.config['sites'][site]['url']}```\n"
         return return_text
 
-    async def _get_customers(self, environment):
+    async def _get_accounts(self, environment):
         sslcontext = ssl.create_default_context(
             cafile=self.config["sites"][environment]["ca"]
         )
@@ -23,14 +23,8 @@ class ASSkill(Skill):
 
         async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.get(api_url, ssl=sslcontext) as resp:
-                # return_text = f"*{environment} - Customers*\n"
                 data = await resp.json()
-                # for i in data["results"]:
-                #     return_text = (
-                #         f"{return_text}```ID: {i['id']} Name: {i['name']}```\n"
-                #     )
-                print(data["#collection"][0])
-                return data
+                return data["#collection"]
 
     # Beging Matching functions
 
@@ -40,9 +34,10 @@ class ASSkill(Skill):
 
         await message.respond(f"{as_environments}")
 
-    @match_regex(r"^account services list customers (?P<environment>\w+-\w+|\w+)$")
-    async def list_customers(self, message):
+    @match_regex(r"^account services list account (?P<environment>\w+-\w+|\w+)$")
+    async def list_accounts(self, message):
         environment = message.regex.group("environment")
-        as_customers = await self._get_customers(environment)
-
-        await message.respond(f"{as_customers}")
+        accounts = await self._get_accounts(environment)
+        for account in accounts:
+            print(account)
+        await message.respond(f"{account}")
