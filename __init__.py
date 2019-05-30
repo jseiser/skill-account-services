@@ -3,7 +3,8 @@ from opsdroid.matchers import match_regex
 
 import aiohttp
 import ssl
-import re
+
+# import re
 
 
 class ASSkill(Skill):
@@ -79,4 +80,11 @@ class ASSkill(Skill):
         environment = message.regex.group("environment")
         name = message.regex.group("name")
         account = await self._get_account_by_name(environment, name)
-        await message.respond(f"{account}")
+        return_text = f"*{environment} - Account*\n"
+        if account:
+            return_text = f"*{return_text}```Customer Name: {account['name']}\n Customer ID: {account['id']}```\n"
+            return_text = f"*{return_text}```Environment\n\tID: {account['environments']['id']}\n\tType: {account['environments']['env_type']}\n\tAccount ID: {account['environments']['account_id']}\n\tSub Account ID{account['environments']['subaccount_id']}```"
+            await message.respond(f"{account}")
+        else:
+            return_text = f"*{return_text}```No Match```"
+            await message.respond(f"{return_text}")
