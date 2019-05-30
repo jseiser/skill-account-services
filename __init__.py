@@ -105,9 +105,11 @@ class ASSkill(Skill):
         timeout = aiohttp.ClientTimeout(total=60)
         api_url = f"{self.config['sites'][environment]['url']}/customers"
         async with aiohttp.ClientSession(timeout=timeout) as session:
-            payload = json.dumps({"#item": {"name": name, "products": []}})
-            async with session.post(api_url, ssl=sslcontext, data=payload) as resp:
+            payload = {"#item": {"name": name, "products": []}}
+            print(payload)
+            async with session.post(api_url, ssl=sslcontext, json=payload) as resp:
                 data = await resp.json()
+                print(resp.status)
                 print(data)
                 return data["#item"]
 
