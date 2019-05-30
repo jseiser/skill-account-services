@@ -4,7 +4,7 @@ from opsdroid.matchers import match_regex
 import aiohttp
 import ssl
 
-# import re
+import re
 
 
 class ASSkill(Skill):
@@ -31,9 +31,8 @@ class ASSkill(Skill):
     async def _get_customer_id_by_name(self, environment, name):
         account_list = await self._get_accounts(environment)
         for account in account_list:
-            if name.lower() == account["name"].lower():
-                # search = re.search(re.escape(name), account["name"], re.IGNORECASE)
-                # if search:
+            search = re.search(re.escape(name), account["name"], re.IGNORECASE)
+            if search:
                 return account["id"]
         return None
 
