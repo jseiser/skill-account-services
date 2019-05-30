@@ -3,7 +3,8 @@ from opsdroid.matchers import match_regex
 
 import aiohttp
 import ssl
-import json
+
+# import json
 import re
 
 
@@ -106,8 +107,12 @@ class ASSkill(Skill):
         api_url = f"{self.config['sites'][environment]['url']}/customers"
         async with aiohttp.ClientSession(timeout=timeout) as session:
             payload = {"#item": {"name": name, "products": []}}
+            headers = {"content-type": "application/x.shr+json"}
             print(payload)
-            async with session.post(api_url, ssl=sslcontext, data=payload) as resp:
+            print(headers)
+            async with session.post(
+                api_url, ssl=sslcontext, json=payload, headers=headers
+            ) as resp:
                 data = await resp.json()
                 print(resp.status)
                 print(data)
