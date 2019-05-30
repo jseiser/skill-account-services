@@ -38,6 +38,7 @@ class ASSkill(Skill):
     async def list_accounts(self, message):
         environment = message.regex.group("environment")
         accounts = await self._get_accounts(environment)
+        return_text = f"*{environment} - Accounts*\n"
         for account in accounts:
-            print(account)
-        await message.respond(f"{account}")
+            return_text = f"{return_text}```ID: {account['id']}Name: {account['name']} Status: {account['status']}```\n"
+        await message.respond(f"{return_text}")
