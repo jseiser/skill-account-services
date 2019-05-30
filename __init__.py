@@ -71,6 +71,23 @@ class ASSkill(Skill):
                     return None
                 return data["#item"]
 
+    async def _disable_account(self, environment, customer_id):
+        sslcontext = ssl.create_default_context(
+            cafile=self.config["sites"][environment]["ca"]
+        )
+        sslcontext.load_cert_chain(self.config["sites"][environment]["cert"])
+        timeout = aiohttp.ClientTimeout(total=60)
+        api_url = f"{self.config['sites'][environment]['url']}/customers/{customer_id}"
+
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.delete(api_url, ssl=sslcontext) as resp:
+                if resp.status == 204:
+                    return "Account Disabled"
+                elif resp.status == 404:
+                    return "Account Not Found"
+                else:
+                    return "Something went wrong"
+
     async def _get_customer_id_by_account_id(self, environment, account_id):
         account_list = await self._get_accounts(environment)
         for account in account_list:
@@ -108,14 +125,10 @@ class ASSkill(Skill):
         async with aiohttp.ClientSession(timeout=timeout) as session:
             payload = {"#item": {"name": name, "products": []}}
             headers = {"content-type": "application/x.shr+json"}
-            print(payload)
-            print(headers)
             async with session.post(
                 api_url, ssl=sslcontext, json=payload, headers=headers
             ) as resp:
                 data = await resp.json()
-                print(resp.status)
-                print(data)
                 return data["#item"]
 
     # Beging Matching functions
@@ -203,3 +216,14 @@ class ASSkill(Skill):
             return_text = f"*{environment} - Account Exists*\n"
             return_text = f"{return_text}```Customer Name: {check_account['name']}\nCustomer ID: {check_account['id']}\nStatus: {check_account['status']}```\n"
             await message.respond(f"{return_text}")
+
+    @match_regex(
+        r"^account services (?P<environment>\w+-\w+|\w+) disable account customer_id: (?P<customer_id>.*)$"
+    )
+    async def disable_account(self, message):
+        environment = message.regex.group("environment")
+        customer_id = message.regex.group("customer_id")
+        disabled = await self._disable_account(environment, customer_id)
+        return_text = f"*{environment} - Disabled Account*\n"
+        return_text = f"*{return_text}```{disabled}```"
+        await message.respond(f"{disabled}")
