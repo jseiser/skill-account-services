@@ -165,3 +165,19 @@ class ASSkill(Skill):
         else:
             return_text = f"{return_text}```No Match```"
             await message.respond(f"{return_text}")
+
+    @match_regex(
+        r"^account services (?P<environment>\w+-\w+|\w+) add account name: (?P<name>.*)$"
+    )
+    async def put_account(self, message):
+        environment = message.regex.group("environment")
+        name = message.regex.group("name")
+        check_account = await self._get_account_by_name(environment, name)
+        if not check_account:
+            # Account Not Found
+            return_text = f"*{environment} -Added Account*\n"
+            return_text = f"{return_text}```NOT IMPLEMENTED```\n"
+            await message.respond(f"{return_text}")
+        return_text = f"*{environment} - Account Exists*\n"
+        return_text = f"{return_text}```Customer Name: {check_account['name']}\nCustomer ID: {check_account['id']}\nStatus: {check_account['status']}```\n"
+        await message.respond(f"{return_text}")
