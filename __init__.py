@@ -29,7 +29,7 @@ class ASSkill(Skill):
                 #     return_text = (
                 #         f"{return_text}```ID: {i['id']} Name: {i['name']}```\n"
                 #     )
-                print(data["#collection"])
+                print(data["#collection"][0])
                 return data
 
     # Beging Matching functions
