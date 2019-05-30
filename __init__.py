@@ -56,6 +56,22 @@ class ASSkill(Skill):
         else:
             return None
 
+    async def _get_account_by_customer_id(self, environment, customer_id):
+        customer_id = await self._get_account_id_by_name(environment, customer_id)
+        sslcontext = ssl.create_default_context(
+            cafile=self.config["sites"][environment]["ca"]
+        )
+        sslcontext.load_cert_chain(self.config["sites"][environment]["cert"])
+        timeout = aiohttp.ClientTimeout(total=60)
+        api_url = f"{self.config['sites'][environment]['url']}/customers/{customer_id}"
+
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.get(api_url, ssl=sslcontext) as resp:
+                data = await resp.json()
+                if not resp.status == 200:
+                    return None
+                return data["#item"]
+
     # Beging Matching functions
 
     @match_regex(r"^account services list environments$")
@@ -84,6 +100,23 @@ class ASSkill(Skill):
         if account:
             print(account)
             print(account["environments"])
+            return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}```\n"
+            for environment in account["environments"]:
+                return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID: {environment['subaccount_id']}```"
+            await message.respond(f"{return_text}")
+        else:
+            return_text = f"{return_text}```No Match```"
+            await message.respond(f"{return_text}")
+
+    @match_regex(
+        r"^account services (?P<environment>\w+-\w+|\w+) get accountid: (?P<customer_id>.*)$"
+    )
+    async def get_account_by_customer_id(self, message):
+        environment = message.regex.group("environment")
+        customer_id = message.regex.group("customer_id")
+        account = await self._get_account_by_customer_id(environment, customer_id)
+        return_text = f"*{environment} - Account*\n"
+        if account:
             return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}```\n"
             for environment in account["environments"]:
                 return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID: {environment['subaccount_id']}```"
