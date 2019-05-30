@@ -86,7 +86,7 @@ class ASSkill(Skill):
             print(account["environments"])
             return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}```\n"
             for environment in account["environments"]:
-                return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID{environment['subaccount_id']}```"
+                return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID: {environment['subaccount_id']}```"
             await message.respond(f"{return_text}")
         else:
             return_text = f"{return_text}```No Match```"
