@@ -79,7 +79,7 @@ class ASSkill(Skill):
                     return account["id"]
         return None
 
-    async def _get_account_by_acount_id(self, environment, account_id):
+    async def _get_account_by_account_id(self, environment, account_id):
         customer_id = await self._get_customer_id_by_account_id(environment, account_id)
         if customer_id:
             sslcontext = ssl.create_default_context(
@@ -128,7 +128,8 @@ class ASSkill(Skill):
             print(account["environments"])
             return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}```\n"
             for environment in account["environments"]:
-                return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID: {environment['subaccount_id']}```"
+
+                return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID: {environment['subaccount_id']}```\n"
             await message.respond(f"{return_text}")
         else:
             return_text = f"{return_text}```No Match```"
@@ -145,7 +146,7 @@ class ASSkill(Skill):
         if account:
             return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}```\n"
             for environment in account["environments"]:
-                return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID: {environment['subaccount_id']}```"
+                return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID: {environment['subaccount_id']}```\n"
             await message.respond(f"{return_text}")
         else:
             return_text = f"{return_text}```No Match```"
@@ -162,7 +163,7 @@ class ASSkill(Skill):
         if account:
             return_text = f"{return_text}```Customer Name: {account['name']}\nCustomer ID: {account['id']}```\n"
             for environment in account["environments"]:
-                return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID: {environment['subaccount_id']}```"
+                return_text = f"{return_text}```Environment\n\tID: {environment['id']}\n\tType: {environment['env_type']}\n\tAccount ID: {environment['account_id']}\n\tSub Account ID: {environment['subaccount_id']}```\n"
             await message.respond(f"{return_text}")
         else:
             return_text = f"{return_text}```No Match```"
