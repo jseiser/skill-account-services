@@ -21,8 +21,8 @@ class ASSkill(Skill):
         timeout = aiohttp.ClientTimeout(total=60)
         api_url = f"{self.config['sites'][environment]['url']}/customers"
 
-        async with aiohttp.ClientSession(timeout=timeout, ssl=sslcontext) as session:
-            async with session.get(api_url) as resp:
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.get(api_url, ssl=sslcontext) as resp:
                 # return_text = f"*{environment} - Customers*\n"
                 data = await resp.json()
                 # for i in data["results"]:
