@@ -57,7 +57,6 @@ class ASSkill(Skill):
             return None
 
     async def _get_account_by_customer_id(self, environment, customer_id):
-        customer_id = await self._get_account_id_by_name(environment, customer_id)
         sslcontext = ssl.create_default_context(
             cafile=self.config["sites"][environment]["ca"]
         )
@@ -109,7 +108,7 @@ class ASSkill(Skill):
             await message.respond(f"{return_text}")
 
     @match_regex(
-        r"^account services (?P<environment>\w+-\w+|\w+) get accountid: (?P<customer_id>.*)$"
+        r"^account services (?P<environment>\w+-\w+|\w+) get account id: (?P<customer_id>.*)$"
     )
     async def get_account_by_customer_id(self, message):
         environment = message.regex.group("environment")
