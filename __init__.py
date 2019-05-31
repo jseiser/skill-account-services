@@ -204,7 +204,29 @@ class ASSkill(Skill):
                 data = await resp.json()
                 return data["#item"]
 
+    async def _get_help(self):
+        return_text = f"*Help*\n"
+        return_text = (
+            f"{return_text}```account services help - Returns This Help Screen```\n"
+        )
+        return_text = f"{return_text}```account services list deployments - Returns Deployment keywords and urls```\n"
+        return_text = f"{return_text}```account services <deployment> get accounts - Returns Name, Customer ID and Status of All Customers in Deployment```\n"
+        return_text = f"{return_text}```account services <deployment> get account name: <name> - Returns Name, Customer ID and Status of specific customer by name```\n"
+        return_text = f"{return_text}```account services <deployment> get account customer_id: <customer_id> - Returns Name, Customer ID and Status of specific customer by customer id```\n"
+        return_text = f"{return_text}```account services <deployment> get account account_id: <account_id> - Returns Name, Customer ID and Status of specific customer by an environments account id```\n"
+        return_text = f"{return_text}```account services <deployment> add account name: <name> - Creates a new customer account```\n"
+        return_text = f"{return_text}```account services <deployment> disable account customer_id: <customer_id> - Disables a customer account by customer id```\n"
+        return_text = f"{return_text}```account services <deployment> add environment customer_id: <customer_id> account_id: <account_id> type: <FAWS|FAZURE|DED> (subaccount_id <subaccount_id>)- Creates a new environment, sub account id optional```\n"
+        return_text = f"{return_text}```account services <deployment> disable environment customer_id: <customer_id> environment_id: <environment_id>- Disables a customers environment```\n"
+        return return_text
+
     # Beging Matching functions
+
+    @match_regex(r"^account services help$")
+    async def list_help(self, message):
+        return_text = await self._get_help()
+
+        await message.respond(f"{return_text}")
 
     @match_regex(r"^account services list deployments$")
     async def list_deployments(self, message):
