@@ -115,6 +115,65 @@ class ASSkill(Skill):
         else:
             return None
 
+    async def _verify_aid_type(self, deployment, account_id, account_type):
+        account_exists = await self._get_account_by_account_id(deployment, account_id)
+        if account_exists:
+            return account_exists
+        else:
+            return None
+
+    async def _get_subaccount_ids(self, deployment, subaccount_id):
+        accounts = await self._get_accounts(deployment)
+        account_ids = list()
+        for account in accounts:
+            for environment in account["environments"]:
+                account_ids.append(str(environment["account_id"]))
+        return account_ids
+
+    async def _add_environment(
+        self, deployment, account_id, customer_id, account_type, subaccount_id=None
+    ):
+        if not account_type.upper() in ["DED", "FAWS", "FAZURE"]:
+            return "Incorrect Account Type"
+
+        if account_type.upper() == "DED":
+            verify_aid_type = await self._verify_aid_type(
+                deployment, account_id, account_type
+            )
+            if verify_aid_type:
+                return "Core/DDI Exists"
+
+        if subaccount_id:
+            verify_subaccount_id = await self._get_subaccount_ids(
+                deployment, account_id, account_type
+            )
+
+            if subaccount_id in verify_subaccount_id:
+                return "Subsciption Exists"
+
+        sslcontext = ssl.create_default_context(
+            cafile=self.config["sites"][deployment]["ca"]
+        )
+        sslcontext.load_cert_chain(self.config["sites"][deployment]["cert"])
+        timeout = aiohttp.ClientTimeout(total=60)
+        api_url = f"{self.config['sites'][deployment]['url']}/customers/{customer_id}/environments"
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            payload = {
+                "#item": {
+                    "account_id": account_id,
+                    "subaccount_id": subaccount_id,
+                    "env_type": account_type.upper(),
+                    "auto_deploy": False,
+                }
+            }
+            headers = {"content-type": "application/x.shr+json"}
+            async with session.post(
+                api_url, ssl=sslcontext, json=payload, headers=headers
+            ) as resp:
+                data = await resp.json()
+                print(data)
+                return data
+
     async def _add_account(self, deployment, name):
         sslcontext = ssl.create_default_context(
             cafile=self.config["sites"][deployment]["ca"]
@@ -129,8 +188,6 @@ class ASSkill(Skill):
                 api_url, ssl=sslcontext, json=payload, headers=headers
             ) as resp:
                 data = await resp.json()
-                print(resp.status)
-                print(data)
                 return data["#item"]
 
     # Beging Matching functions
@@ -230,3 +287,45 @@ class ASSkill(Skill):
         return_text = f"*{return_text}```{disabled}```"
         await message.respond(f"{disabled}")
 
+    @match_regex(
+        r"^account services (?P<deployment>\w+-\w+|\w+) add environment customer_id: (?P<customer_id>.*) account_id: (?P<account_id>.*) type: (?P<type>.*) subaccount_id: (?P<supportaccount_id>.*)$"
+    )
+    async def add_environment_sub(self, message):
+        deployment = message.regex.group("deployment")
+        customer_id = message.regex.group("customer_id")
+        account_id = message.regex.group("account_id")
+        account_type = message.regex.group("type")
+        subaccount_id = message.regex.group("subaccount_id")
+
+        environment = await self._add_environment(
+            deployment, account_id, customer_id, account_type, subaccount_id
+        )
+
+        return_text = f"*{deployment} - Add Environment*\n"
+        add_errors = ["Incorrect Account Type", "Core/DDI Exists", "Subsciption Exists"]
+        if environment in add_errors:
+            return_text = f"*{return_text}```{environment}```"
+        else:
+            return_text = f"*{return_text}```{environment}```"
+        await message.respond(f"{environment}")
+
+    @match_regex(
+        r"^account services (?P<deployment>\w+-\w+|\w+) add environment customer_id: (?P<customer_id>.*) account_id: (?P<account_id>.*) type: (?P<type>.*)$"
+    )
+    async def add_environment(self, message):
+        deployment = message.regex.group("deployment")
+        customer_id = message.regex.group("customer_id")
+        account_id = message.regex.group("account_id")
+        account_type = message.regex.group("type")
+
+        environment = await self._add_environment(
+            deployment, account_id, customer_id, account_type
+        )
+
+        return_text = f"*{deployment} - Add Environment*\n"
+        add_errors = ["Incorrect Account Type", "Core/DDI Exists", "Subsciption Exists"]
+        if environment in add_errors:
+            return_text = f"*{return_text}```{environment}```"
+        else:
+            return_text = f"*{return_text}```{environment}```"
+        await message.respond(f"{environment}")
