@@ -173,7 +173,7 @@ class ASSkill(Skill):
             ) as resp:
                 data = await resp.json()
                 print(data)
-                return data
+                return data["#item"]
 
     async def _add_account(self, deployment, name):
         sslcontext = ssl.create_default_context(
@@ -307,7 +307,7 @@ class ASSkill(Skill):
         if environment in add_errors:
             return_text = f"*{return_text}```{environment}```"
         else:
-            return_text = f"*{return_text}```{environment}```"
+            return_text = f"{return_text}```Environment ID: {environment['id']}\nCustomer ID: {environment['customer_id']}\nAccount ID: {environment['id']}\nSub Account ID: {environment['subaccount_id']}\nType: {environment['env_type']}```\n"
         await message.respond(f"{environment}")
 
     @match_regex(
@@ -328,5 +328,5 @@ class ASSkill(Skill):
         if environment in add_errors:
             return_text = f"*{return_text}```{environment}```"
         else:
-            return_text = f"*{return_text}```{environment}```"
+            return_text = f"{return_text}```Environment ID: {environment['id']}\nCustomer ID: {environment['customer_id']}\nAccount ID: {environment['id']}\nSub Account ID: {environment['subaccount_id']}\nType: {environment['env_type']}```\n"
         await message.respond(f"{environment}")
