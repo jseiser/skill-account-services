@@ -144,9 +144,7 @@ class ASSkill(Skill):
                 return "Core/DDI Exists"
 
         if subaccount_id:
-            verify_subaccount_id = await self._get_subaccount_ids(
-                deployment, account_id, account_type
-            )
+            verify_subaccount_id = await self._get_subaccount_ids(deployment)
 
             if subaccount_id in verify_subaccount_id:
                 return "Subsciption Exists"
