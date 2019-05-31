@@ -133,6 +133,7 @@ class ASSkill(Skill):
     async def _add_environment(
         self, deployment, account_id, customer_id, account_type, subaccount_id=None
     ):
+        print(account_type.upper())
         if not account_type.upper() in ["DED", "FAWS", "FAZURE"]:
             return "Incorrect Account Type"
 
