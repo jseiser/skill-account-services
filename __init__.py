@@ -122,7 +122,7 @@ class ASSkill(Skill):
         else:
             return None
 
-    async def _get_subaccount_ids(self, deployment, subaccount_id):
+    async def _get_subaccount_ids(self, deployment):
         accounts = await self._get_accounts(deployment)
         account_ids = list()
         for account in accounts:
