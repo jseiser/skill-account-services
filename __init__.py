@@ -88,6 +88,23 @@ class ASSkill(Skill):
                 else:
                     return "Something went wrong"
 
+    async def _disable_environment(self, deployment, customer_id, environment_id):
+        sslcontext = ssl.create_default_context(
+            cafile=self.config["sites"][deployment]["ca"]
+        )
+        sslcontext.load_cert_chain(self.config["sites"][deployment]["cert"])
+        timeout = aiohttp.ClientTimeout(total=60)
+        api_url = f"{self.config['sites'][deployment]['url']}/customers/{customer_id}/environments/{environment_id}"
+
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.delete(api_url, ssl=sslcontext) as resp:
+                if resp.status == 204:
+                    return "Environment Disabled"
+                elif resp.status == 404:
+                    return "Environment Not Found"
+                else:
+                    return "Something went wrong"
+
     async def _get_customer_id_by_account_id(self, deployment, account_id):
         account_list = await self._get_accounts(deployment)
         for account in account_list:
@@ -327,3 +344,17 @@ class ASSkill(Skill):
         else:
             return_text = f"{return_text}```Environment ID: {environment['id']}\nCustomer ID: {environment['customer_id']}\nAccount ID: {environment['id']}\nSub Account ID: {environment['subaccount_id']}\nType: {environment['env_type']}```\n"
         await message.respond(f"{return_text}")
+
+    @match_regex(
+        r"^account services (?P<deployment>\w+-\w+|\w+) disable environment customer_id: (?P<customer_id>.*) environment_id: (?P<environment_id>.*)$"
+    )
+    async def disable_environment(self, message):
+        deployment = message.regex.group("deployment")
+        customer_id = message.regex.group("customer_id")
+        environment_id = message.regex.group("customer_id")
+        disabled = await self._disable_environment(
+            deployment, customer_id, environment_id
+        )
+        return_text = f"*{deployment} - DisabledEnvironmentt*\n"
+        return_text = f"*{return_text}```{disabled}```"
+        await message.respond(f"{disabled}")
