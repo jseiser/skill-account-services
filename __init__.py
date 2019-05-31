@@ -133,7 +133,6 @@ class ASSkill(Skill):
     async def _add_environment(
         self, deployment, account_id, customer_id, account_type, subaccount_id=None
     ):
-        print(account_type.upper())
         if not account_type.upper() in ["DED", "FAWS", "FAZURE"]:
             return "Incorrect Account Type"
 
@@ -172,7 +171,6 @@ class ASSkill(Skill):
                 api_url, ssl=sslcontext, json=payload, headers=headers
             ) as resp:
                 data = await resp.json()
-                print(data)
                 return data["#item"]
 
     async def _add_account(self, deployment, name):
