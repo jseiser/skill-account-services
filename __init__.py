@@ -289,7 +289,7 @@ class ASSkill(Skill):
         await message.respond(f"{disabled}")
 
     @match_regex(
-        r"^account services (?P<deployment>\w+-\w+|\w+) add environment customer_id: (?P<customer_id>.*) account_id: (?P<account_id>.*) type: (?P<type>.*) subaccount_id: (?P<subaccount_id>.*)$"
+        r"^account services (?P<deployment>\w+-\w+|\w+) add environment customer_id: (?P<customer_id>.*) account_id: (?P<account_id>.*) type: (?P<type>FAWS|FAZURE|DED) subaccount_id: (?P<subaccount_id>.*)$"
     )
     async def add_environment_sub(self, message):
         deployment = message.regex.group("deployment")
@@ -311,7 +311,7 @@ class ASSkill(Skill):
         await message.respond(f"{environment}")
 
     @match_regex(
-        r"^account services (?P<deployment>\w+-\w+|\w+) add environment customer_id: (?P<customer_id>.*) account_id: (?P<account_id>.*) type: (?P<type>.*)$"
+        r"^account services (?P<deployment>\w+-\w+|\w+) add environment customer_id: (?P<customer_id>.*) account_id: (?P<account_id>.*) (?P<type>FAWS|FAZURE|DED)$"
     )
     async def add_environment(self, message):
         deployment = message.regex.group("deployment")
