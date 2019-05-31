@@ -301,10 +301,10 @@ class ASSkill(Skill):
         return_text = f"*{deployment} - Add Environment*\n"
         add_errors = ["Incorrect Account Type", "Core/DDI Exists", "Subsciption Exists"]
         if environment in add_errors:
-            return_text = f"*{return_text}```{environment}```"
+            return_text = f"{return_text}```{environment}```"
         else:
             return_text = f"{return_text}```Environment ID: {environment['id']}\nCustomer ID: {environment['customer_id']}\nAccount ID: {environment['id']}\nSub Account ID: {environment['subaccount_id']}\nType: {environment['env_type']}```\n"
-        await message.respond(f"{environment}")
+        await message.respond(f"{return_text}")
 
     @match_regex(
         r"^account services (?P<deployment>\w+-\w+|\w+) add environment customer_id: (?P<customer_id>.*) account_id: (?P<account_id>.*) (?P<type>FAWS|FAZURE|DED)$"
@@ -321,8 +321,9 @@ class ASSkill(Skill):
 
         return_text = f"*{deployment} - Add Environment*\n"
         add_errors = ["Incorrect Account Type", "Core/DDI Exists", "Subsciption Exists"]
+        print(environment)
         if environment in add_errors:
-            return_text = f"*{return_text}```{environment}```"
+            return_text = f"{return_text}```{environment}```"
         else:
             return_text = f"{return_text}```Environment ID: {environment['id']}\nCustomer ID: {environment['customer_id']}\nAccount ID: {environment['id']}\nSub Account ID: {environment['subaccount_id']}\nType: {environment['env_type']}```\n"
-        await message.respond(f"{environment}")
+        await message.respond(f"{return_text}")
