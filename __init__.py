@@ -212,8 +212,8 @@ class ASSkill(Skill):
 
         await message.respond(f"{as_deployments}")
 
-    @match_regex(r"^account services (?P<deployment>\w+-\w+|\w+) list accounts$")
-    async def list_accounts(self, message):
+    @match_regex(r"^account services (?P<deployment>\w+-\w+|\w+) get accounts$")
+    async def get_accounts(self, message):
         deployment = message.regex.group("deployment")
         accounts = await self._get_accounts(deployment)
         return_text = f"*{deployment} - Accounts*\n"
@@ -351,7 +351,7 @@ class ASSkill(Skill):
     async def disable_environment(self, message):
         deployment = message.regex.group("deployment")
         customer_id = message.regex.group("customer_id")
-        environment_id = message.regex.group("customer_id")
+        environment_id = message.regex.group("environment_id")
         disabled = await self._disable_environment(
             deployment, customer_id, environment_id
         )
